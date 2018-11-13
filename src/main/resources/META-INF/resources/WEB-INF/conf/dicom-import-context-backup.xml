@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xmlns:context="http://www.springframework.org/schema/context"
+xmlns:util="http://www.springframework.org/schema/util"
+xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+
+<bean name="dicomObjectIdentifier" class="org.nrg.dcm.id.ClassicDicomObjectIdentifier">
+	<property name="userProvider" ref="receivedFileUserProvider" />
+</bean>
+ 
+<bean name="dicomSCPExecutor" class="java.util.concurrent.Executors"
+factory-method="newCachedThreadPool" />
+ 
+<bean name="dcmtProjectIdent" class="org.nrg.dcm.id.MQDicomProjectIdentifier">
+	<constructor-arg value="dcmt"/>
+</bean>
+ 
+<bean name="baseSubjectIdent" class="org.nrg.dcm.id.ClassicDicomObjectIdentifier" factory-method="getSessionExtractors"/>
+<bean name="baseSessionIdent" class="org.nrg.dcm.id.ClassicDicomObjectIdentifier" factory-method="getSubjectExtractors"/>
+<bean name="baseAAIdent" class="org.nrg.dcm.id.ClassicDicomObjectIdentifier" factory-method="getAAExtractors"/>
+ 
+<bean name="dcmtObjectIdent" class="org.nrg.dcm.id.CompositeDicomObjectIdentifier">
+	<constructor-arg ref="dcmtProjectIdent"/>
+	<constructor-arg ref="baseSubjectIdent"/>
+	<constructor-arg ref="baseSessionIdent"/>
+	<constructor-arg ref="baseAAIdent"/>
+	<property name="userProvider" ref="receivedFileUserProvider"/>
+</bean>
+ 
+<util:map id="cstores">
+	<entry key="dcmt" value-ref="dcmtObjectIdent"/>
+	<entry key="XNAT" value-ref="dicomObjectIdentifier"/>
+</util:map>
+ 
+<bean name="dicomSCP" class="org.nrg.dcm.DicomSCP" factory-method="create">
+	<constructor-arg ref="dicomSCPExecutor" />
+	<constructor-arg value="8108" />
+	<constructor-arg ref="receivedFileUserProvider" />
+	<constructor-arg ref="cstores"/>
+</bean>
+
+<bean name="dicomSCPManager" class="org.nrg.dcm.DicomSCPManager">
+        <constructor-arg ref="dicomSCP" />
+</bean>
+
+</beans>
