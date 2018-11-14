@@ -9,8 +9,7 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.sprin
 	<property name="userProvider" ref="receivedFileUserProvider" />
 </bean>
  
-<bean name="dicomSCPExecutor" class="java.util.concurrent.Executors"
-factory-method="newCachedThreadPool" />
+<bean name="dicomSCPExecutor" class="java.util.concurrent.Executors" factory-method="newCachedThreadPool" />
  
 <bean name="dcmtProjectIdent" class="org.nrg.dcm.id.MQDicomProjectIdentifier">
 	<constructor-arg value="dcmt"/>
@@ -33,14 +32,14 @@ factory-method="newCachedThreadPool" />
 	<entry key="XNAT" value-ref="dicomObjectIdentifier"/>
 </util:map>
  
-<bean name="dicomSCP" class="org.nrg.dcm.DicomSCP" factory-method="create">
+<bean name="dicomSCP" class="org.nrg.dcm.scp.DicomSCP" factory-method="create">
 	<constructor-arg ref="dicomSCPExecutor" />
 	<constructor-arg value="8108" />
 	<constructor-arg ref="receivedFileUserProvider" />
 	<constructor-arg ref="cstores"/>
 </bean>
 
-<bean name="dicomSCPManager" class="org.nrg.dcm.DicomSCPManager">
+<bean name="dicomSCPManager" class="org.nrg.dcm.scp.DicomSCPManager">
         <constructor-arg ref="dicomSCP" />
 </bean>
 
