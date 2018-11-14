@@ -1,0 +1,19 @@
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <bean name="dinadProjectIdent" class="org.nrg.dcm.id.MQDicomProjectIdentifier">
+        <constructor-arg value="DINAD"/>
+    </bean>
+
+    <bean name="baseSubjectIdent" class="org.nrg.dcm.id.ClassicDicomObjectIdentifier" factory-method="getSessionExtractors"/>
+    <bean name="baseSessionIdent" class="org.nrg.dcm.id.ClassicDicomObjectIdentifier" factory-method="getSubjectExtractors"/>
+    <bean name="baseAAIdent" class="org.nrg.dcm.id.ClassicDicomObjectIdentifier" factory-method="getAAExtractors"/>
+
+    <bean name="dinadDicomObjectIdentifier" class="org.nrg.dcm.id.CompositeDicomObjectIdentifier">
+        <constructor-arg ref="dinadProjectIdent"/>
+        <constructor-arg ref="baseSubjectIdent"/>
+        <constructor-arg ref="baseSessionIdent"/>
+        <constructor-arg ref="baseAAIdent"/>
+        <property name="userProvider" ref="receivedFileUserProvider"/>
+    </bean>
+
+</beans>
