@@ -167,9 +167,9 @@ logger.info "Build-Date:   ${buildDate}"
 logger.info "Build-Number: ${buildNumber}"
 
 jar {
-    baseName "mqmeg"
+    baseName "MQ-MMI-auto-dicom"
     manifest {
-        attributes "Application-Name": "MQMEG DICOM Object Identifier Plugin",
+        attributes "Application-Name": "Macquaire University automatic Dicom routing",
                 "Build-Date": buildDate,
                 "Build-Number": buildNumber
     }
@@ -200,4 +200,3 @@ publishing.repositories {
 def propertyWithDefault(String property, Object value) {
     hasProperty(property) ? getProperty(property) : value
 }
-
