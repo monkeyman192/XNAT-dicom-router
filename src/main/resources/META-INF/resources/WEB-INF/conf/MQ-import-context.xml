@@ -4,8 +4,8 @@
     <bean name="MQProjectIdent" class="org.nrg.dcm.id.MQDicomProjectIdentifier" />
 
     <!-- These are the usual identifiers for session, subject and comment -->
-    <bean name="baseSubjectIdent" class="org.nrg.dcm.id.ClassicDicomObjectIdentifier" factory-method="getSessionExtractors"/>
-    <bean name="baseSessionIdent" class="org.nrg.dcm.id.ClassicDicomObjectIdentifier" factory-method="getSubjectExtractors"/>
+    <bean name="baseSubjectIdent" class="org.nrg.dcm.id.ClassicDicomObjectIdentifier" factory-method="getSubjectExtractors"/>
+    <bean name="baseSessionIdent" class="org.nrg.dcm.id.ClassicDicomObjectIdentifier" factory-method="getSessionExtractors"/>
     <bean name="baseAAIdent" class="org.nrg.dcm.id.ClassicDicomObjectIdentifier" factory-method="getAAExtractors"/>
 
     <!-- Custom Dicom identifier -->

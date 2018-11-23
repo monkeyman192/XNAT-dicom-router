@@ -38,7 +38,7 @@ public final class MQDicomProjectIdentifier implements DicomProjectIdentifier
     // [info we want] must consist of letters and numbers, the matching stops once a non-alphanumeric character is hit
     private static final Pattern SIEMENS_PATTERN = Pattern.compile("(?:[^\\^]+)\\^((?:[a-zA-Z\\d]+))(.*?)");
     // this pattern will match (anything)[one of TOTAL, DINAD, BRAINPROJECT, or VAD](anything)
-    private static final Pattern GE_PATTERN = Pattern.compile("(.*?)(TOTAL|DINAD|BRAINPROJECT|VAD)(.*?)");
+    private static final Pattern GE_PATTERN = Pattern.compile("(.*?)(TOTAL|DINAD|BRAINPROJECT|VAD|CHROME)(.*?)");
 
     // This doesn't seem to be called at any point, but removing it seems to cause the plugin to not work...
     // So best to just keep it...
