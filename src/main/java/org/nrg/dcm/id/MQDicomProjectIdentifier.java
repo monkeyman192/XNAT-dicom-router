@@ -32,6 +32,8 @@ public final class MQDicomProjectIdentifier implements DicomProjectIdentifier
     private String proj_name = null;
     private XnatProjectdata _project;
 
+    //public static org.apache.log4j.Logger logger = Logger.getLogger(MQDicomProjectIdentifier.class);
+
     // Define the regex patterns reuired to extract the required information from the descriptions
 
     // this pattern will match (anything)^[info we want].
@@ -101,13 +103,22 @@ public final class MQDicomProjectIdentifier implements DicomProjectIdentifier
         {
             name = null;
         }
+        
+        //logger.info(String.format("putting MRI files into project %s", name.toString()));
 
         // only find the new project if the name has changed, otherwise we simply return the cached _project
         // This differs from the FixedDicomProjectIdentifier which assigned _project permanently.
-        // We are expecting the project to change depending on the 
-        if (name != proj_name)
+        // We are expecting the project to change depending on the file
+        if (name != null)
         {
-            _project = XnatProjectdata.getProjectByIDorAlias(name, user, false);
+            if (name != proj_name)
+            {
+                _project = XnatProjectdata.getProjectByIDorAlias(name, user, false);
+            }
+        }
+        else
+        {
+            _project = null;
         }
         return _project;
     }
