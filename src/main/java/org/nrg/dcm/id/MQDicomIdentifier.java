@@ -11,19 +11,27 @@
 
 package org.nrg.dcm.id;
 
+import com.google.common.collect.ImmutableList;
+import org.nrg.dcm.Extractor;
+import org.nrg.dcm.TextExtractor;
+
 import java.util.SortedSet;
+import java.util.List;
 
 import org.dcm4che2.data.DicomObject;
 import org.dcm4che2.data.Tag;
 import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xft.security.UserI;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.google.common.collect.ImmutableSortedSet;
 
-public final class MQDicomProjectIdentifier implements DicomProjectIdentifier
+public final class MQDicomIdentifier implements DicomProjectIdentifier
 {
 
     private static final ImmutableSortedSet<Integer> TAGS = ImmutableSortedSet.of();
@@ -32,7 +40,14 @@ public final class MQDicomProjectIdentifier implements DicomProjectIdentifier
     private String proj_name = null;
     private XnatProjectdata _project;
 
-    //public static org.apache.log4j.Logger logger = Logger.getLogger(MQDicomProjectIdentifier.class);
+    // Define a custom ImmutableList of Extractors to overwrite the default behaviour.
+    // The session is usually extracted from the PatientID which we do not want, so we will overwrite this behaviour
+    // to use the AccessionNumber in the DICOM header instead.
+    // This could be defined in a separate class specifically for this, but since we already have this object created
+    // we might as well use it.
+    private static final ImmutableList<Extractor> sessionExtractors = new ImmutableList.Builder<Extractor>().add(new TextExtractor(Tag.AccessionNumber)).build();
+
+    static Logger logger = LoggerFactory.getLogger(MQDicomIdentifier.class);
 
     // Define the regex patterns reuired to extract the required information from the descriptions
 
@@ -45,7 +60,7 @@ public final class MQDicomProjectIdentifier implements DicomProjectIdentifier
     // This doesn't seem to be called at any point, but removing it seems to cause the plugin to not work...
     // So best to just keep it...
     @SuppressWarnings("unused")
-    public MQDicomProjectIdentifier(final XnatProjectdata project) {
+    public MQDicomIdentifier(final XnatProjectdata project) {
         _project = project;
     }
 
@@ -64,7 +79,7 @@ public final class MQDicomProjectIdentifier implements DicomProjectIdentifier
      * For this reason it's probably better if you need to do any logic based on data in the dicom file itself
      * to have this in the `apply` method.
      */
-    public MQDicomProjectIdentifier()
+    public MQDicomIdentifier()
     {
     }
 
@@ -103,8 +118,6 @@ public final class MQDicomProjectIdentifier implements DicomProjectIdentifier
         {
             name = null;
         }
-        
-        //logger.info(String.format("putting MRI files into project %s", name.toString()));
 
         // only find the new project if the name has changed, otherwise we simply return the cached _project
         // This differs from the FixedDicomProjectIdentifier which assigned _project permanently.
@@ -113,16 +126,22 @@ public final class MQDicomProjectIdentifier implements DicomProjectIdentifier
         {
             if (name != proj_name)
             {
+                logger.info(String.format("Placing DICOM scans in project %s", name.toString()));
                 _project = XnatProjectdata.getProjectByIDorAlias(name, user, false);
             }
         }
         else
         {
+            logger.error(String.format("Unable to find an appropriate project to put DICOM with Study Description \"%s\"", description.toString()));
             _project = null;
         }
         return _project;
     }
 
+    // public method to allow the session extractor list to be retreived by the spring xml file.
+    // This will be called the "MQSessionIdent" bean in this xml file and will be passed to the
+    // CompositeDicomObjectIdentifier as an argument in place of the default vanilla Extractor.
+    public static List<Extractor> getSessionExtractors() { return sessionExtractors; }
 
     @Override
     public void reset() {

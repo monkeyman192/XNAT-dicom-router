@@ -1,18 +1,20 @@
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
     <!-- Custom project identifier -->
-    <bean name="MQProjectIdent" class="org.nrg.dcm.id.MQDicomProjectIdentifier" />
+    <bean name="MQIdentifier" class="org.nrg.dcm.id.MQDicomIdentifier" />
+
+    <!-- Identify session by the acession number -->
+    <bean name="MQSessionIdent" class="org.nrg.dcm.id.MQDicomIdentifier" factory-method="getSessionExtractors"/>
 
     <!-- These are the usual identifiers for session, subject and comment -->
     <bean name="baseSubjectIdent" class="org.nrg.dcm.id.ClassicDicomObjectIdentifier" factory-method="getSubjectExtractors"/>
-    <bean name="baseSessionIdent" class="org.nrg.dcm.id.ClassicDicomObjectIdentifier" factory-method="getSessionExtractors"/>
     <bean name="baseAAIdent" class="org.nrg.dcm.id.ClassicDicomObjectIdentifier" factory-method="getAAExtractors"/>
 
     <!-- Custom Dicom identifier -->
     <bean name="MQDicomObjectIdentifier" class="org.nrg.dcm.id.CompositeDicomObjectIdentifier">
-        <constructor-arg ref="MQProjectIdent"/>
+        <constructor-arg ref="MQIdentifier"/>
         <constructor-arg ref="baseSubjectIdent"/>
-        <constructor-arg ref="baseSessionIdent"/>
+        <constructor-arg ref="MQSessionIdent"/>
         <constructor-arg ref="baseAAIdent"/>
         <property name="userProvider" ref="receivedFileUserProvider"/>
     </bean>
